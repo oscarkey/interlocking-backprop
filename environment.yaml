@@ -1,0 +1,14 @@
+name: interlocking-backprop
+channels:
+    - pytorch
+    - defaults
+dependencies:
+    - python=3.8.*
+    - pytorch=1.6
+    - torchvision
+    - pytest
+    - black
+    - mypy
+    - pip
+    - pip:
+        - -e .
