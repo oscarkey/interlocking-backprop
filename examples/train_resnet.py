@@ -1,3 +1,4 @@
+"""A demonstration of how to train a ResNet on CIFAR10 using various model-parallel optimisation schemes."""
 import math
 from argparse import ArgumentParser
 from typing import Optional, Tuple, cast
@@ -75,9 +76,14 @@ def main(dataset_root: str, mode: str):
         model = interlocking_backprop.build_pairwise_model(
             main_nets, aux_nets, optimizer_constructor, lr_scheduler_constructor, loss_function
         )
-    elif mode == "nwise":
-        model = interlocking_backprop.build_pairwise_model(
-            main_nets, aux_nets, optimizer_constructor, lr_scheduler_constructor, loss_function
+    elif mode == "3wise":
+        model = interlocking_backprop.build_nwise_model(
+            main_nets,
+            aux_nets,
+            optimizer_constructor,
+            lr_scheduler_constructor,
+            loss_function,
+            nwise_communication_distance=3 - 1,
         )
     else:
         raise ValueError(f"Unknown mode {mode}")
@@ -128,7 +134,7 @@ def _compute_num_logits_correct(logits: Tensor, targets: Tensor) -> Tuple[int, i
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--dataset_root", type=str, required=True)
-    parser.add_argument("--mode", choices=["e2e", "local", "pairwise"], required=True)
+    parser.add_argument("--mode", choices=["e2e", "local", "pairwise", "3wise"], required=True)
     args = parser.parse_args()
 
     main(args.dataset_root, args.mode)
