@@ -1,10 +1,10 @@
-"""Wrappers around the `queue` module for when the items in the queue contain data on GPUs."""
+"""Wrappers around the `queue` module for when the queue items contain data on GPUs."""
 
 from __future__ import annotations
 
 import queue
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Union, cast
+from typing import Generic, TypeVar, Union
 
 import torch
 from torch import Tensor
@@ -14,7 +14,10 @@ MAX_WAIT_SECS = 10
 
 
 class DataOnGpu(ABC):
-    """Indicates that a class contains Tensors on the GPU, and so need to be moved from one GPU to another."""
+    """Indicates that a class contains Tensors on the GPU.
+
+    This data will need to be moved from one device to another.
+    """
 
     @abstractmethod
     def to(self: S, device: torch.device) -> S:
@@ -22,8 +25,8 @@ class DataOnGpu(ABC):
         pass
 
     def detach(self: S) -> S:
-        """Returns a copy of this object with all Tensors detached from the computation graph."""
-        # Not all subclasses have to implement detach() if they don't expect to be detached.
+        """Returns a copy of this object with all Tensors detached from the graph."""
+        # Subclasses only have to implement detach() if they expect to be detached.
         raise NotImplementedError
 
 
@@ -37,17 +40,18 @@ class GpuAwareQueue(ABC, Generic[T]):
     """A wrapper around queue.Queue which has additional GPU related features:
 
      - get() moves any Tensors in the item to the specified GPU
-     - put() can block until the consumer is ready to receive the item, and any Tensors in the item have been moved onto
-       the correct GPU. This blocks the producer from loading any new Tensors onto the device until the old ones have
-       been removed.
+     - put() can block until the consumer is ready to receive the item, and any Tensors
+       in the item have been moved onto the correct GPU. This blocks the producer from
+       loading any new Tensors onto the device until the old ones have been removed.
     """
 
     @abstractmethod
     def put(self, x: T, block_until_recieved: bool = True) -> None:
         """Adds the given item to the back of the queue.
 
-        :param block_until_recieved: If True, this method will block until the item is removed by the consumer using
-                                     get(). Regardless, this method will block if the queue is full.
+        :param block_until_recieved: If True, this method will block until the item is
+                                     removed by the consumer using get(). Regardless,
+                                     this method will block if the queue is full.
         """
         pass
 
@@ -64,9 +68,11 @@ class OneItemQueue(GpuAwareQueue[T]):
         self._name = name
 
     def put(self, x: T, block_until_recieved: bool = True) -> None:
-        # We always block until there is room in the queue. block_until_recieved controls whether we block until the
-        # consumer has removed the item from the queue. If True, then we block until task_done() is called in get(). At
-        # this point the item has been moved on the correct device, and handed to the consumer.
+        # We always block until there is room in the queue. block_until_recieved
+        # controls whether we block until the consumer has removed the item from the
+        # queue. If True, then we block until task_done() is called in get(). At this
+        # point the item has been moved on the correct device, and handed to the
+        # consumer.
         self._queue.put(x, block=True)
         if block_until_recieved:
             self._queue.join()
@@ -79,11 +85,13 @@ class OneItemQueue(GpuAwareQueue[T]):
 
 
 class NoOpQueue(GpuAwareQueue[T]):
-    """A queue that just throws away items you put(). get() throws NotImplementedError."""
+    """A queue that throws away items you put(). get() throws NotImplementedError."""
 
     def put(self, x: T, block_until_recieved: bool = True) -> None:
         # Just discard it.
         pass
 
     def get(self, device: torch.device) -> T:
-        raise NotImplementedError("Cannot get from a queue that does not store anything.")
+        raise NotImplementedError(
+            "Cannot get from a queue that does not store anything."
+        )

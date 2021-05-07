@@ -1,6 +1,9 @@
 import pytest
-
-from interlocking_backprop.threaded_actors import ThreadedActor, on_worker_thread, create_future_with_value
+from interlocking_backprop.threaded_actors import (
+    ThreadedActor,
+    create_future_with_value,
+    on_worker_thread,
+)
 
 
 def test__on_worker_thread__method_throws_exception__exception_rethrown():
