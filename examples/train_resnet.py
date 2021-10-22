@@ -36,6 +36,7 @@ def main(dataset_root: str, mode: str):
         dataset_root,
         train=True,
         transform=Compose([augment_transform, normalize_transform]),
+        download=True,
     )
     validation_dataset = CIFAR10(
         dataset_root, train=True, transform=normalize_transform
