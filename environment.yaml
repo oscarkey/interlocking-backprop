@@ -3,8 +3,8 @@ channels:
     - pytorch
     - defaults
 dependencies:
-    - python=3.8.*
-    - pytorch=1.6
+    - python=3.9.*
+    - pytorch=1.10
     - torchvision
     - pytest
     - black
