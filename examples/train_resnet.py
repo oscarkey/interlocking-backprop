@@ -149,6 +149,7 @@ def main(dataset_root: str, mode: str):
             torch.stack([loss.result() for loss in losses], axis=0).mean().item()
         )
         validation_accuracy = _compute_accuracy(validation_dataloader, model)
+        model.lr_scheduler_step(-validation_accuracy)
         print(
             f"Epoch {epoch + 1}: "
             f"training loss = {train_loss:.3f} "
