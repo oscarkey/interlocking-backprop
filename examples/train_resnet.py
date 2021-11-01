@@ -139,7 +139,7 @@ def main(dataset_root: str, mode: str):
         f"validation accuracy = {_compute_accuracy(validation_dataloader, model):.2f}"
     )
 
-    for epoch in range(100):
+    for epoch in range(200):
         model.train()
         losses = []
         for inputs, targets in train_dataloader:
