@@ -1,6 +1,6 @@
 # Interlocking Backpropagation: Improving depthwise model-parallelism
 
-Code associated with the paper: [Interlocking Backpropagation: Improving depthwise model-parallelism](https://arxiv.org/abs/2010.04116) (Aidan N. Gomez, Oscar Key, Stephen Gou, Nick Frosst, Jeff Dean, Yarin Gal)
+Code associated with the paper: [Interlocking Backpropagation: Improving depthwise model-parallelism](https://arxiv.org/abs/2010.04116) (Aidan N. Gomez*, Oscar Key*, Kuba Perlin, Stephen Gou, Nick Frosst, Jeff Dean, Yarin Gal)
 
 This is an implementation of various model-parallel training schemes in PyTorch.
 Its primary aim is to be a research platform for studying these approaches, but it might also be a useful base for a production implementation.
@@ -13,7 +13,7 @@ If this code has been useful in your research, please add a citation:
 ```
 @article{gomez2020interlocking,
       title={Interlocking Backpropagation: Improving depthwise model-parallelism},
-      author={Aidan N. Gomez and Oscar Key and Stephen Gou and Nick Frosst and Jeff Dean and Yarin Gal},
+      author={Aidan N. Gomez and Oscar Key and Kuba Perlin and Stephen Gou and Nick Frosst and Jeff Dean and Yarin Gal},
       year={2020},
       eprint={2010.04116},
       archivePrefix={arXiv},
